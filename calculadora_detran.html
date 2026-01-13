@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Taxas DETRAN - Prime Despachante</title>
+
+    <style>
+        /* ====== ESTILO GERAL (TELA) ====== */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f4f6f8;
+            padding: 20px;
+            color: #333;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+            background: #ffffff;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header {
+            text-align: center;
+            border-bottom: 2px solid #1296DB;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .header img {
+            max-width: 150px;
+            margin-bottom: 10px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #1296DB;
+            color: white;
+            padding: 12px;
+            text-align: left;
+        }
+
+        td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background-color: #f9f9f9;
+        }
+
+        .totais {
+            margin-top: 30px;
+            padding: 20px;
+            background: #f9f9f9;
+            border-radius: 5px;
+            font-size: 18px;
+        }
+
+        .honorarios-label {
+            margin: 15px 0;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        input[type="number"] {
+            padding: 5px;
+            width: 100px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        button {
+            margin-top: 25px;
+            padding: 12px 25px;
+            background: #1296DB;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 16px;
+            transition: background 0.3s;
+        }
+
+        button:hover {
+            background: #0e7bb3;
+        }
+
+        /* Span para mostrar honorários no PDF sem o input */
+        #honorariosVisual { display: none; }
+
+        /* ====== CONFIGURAÇÃO DE IMPRESSÃO (PDF) ====== */
+        @media print {
+            body {
+                background: white;
+                padding: 0;
+            }
+
+            .container {
+                box-shadow: none;
+                max-width: 100%;
+                padding: 10px;
+            }
+
+            /* Esconde botões e elementos interativos */
+            button, .honorarios-label input, .header img {
+                display: none;
+            }
+
+            /* Mostra o valor dos honorários como texto simples */
+            #honorariosVisual {
+                display: inline;
+                font-weight: bold;
+            }
+
+            /* Esconde a coluna dos Checkboxes */
+            th:first-child, td:first-child {
+                display: none;
+            }
+
+            /* LÓGICA PRINCIPAL: Esconde linhas que não estão selecionadas */
+            tr:not(.selecionada):not(:first-child) {
+                display: none;
+            }
+
+            /* Estética do PDF */
+            th {
+                background: #f0f0f0 !important;
+                color: black !important;
+                border: 1px solid #ddd;
+            }
+            td {
+                border: 1px solid #ddd;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+    <div class="header">
+        <img src="imgs/Captura de tela 2026-01-13 155835.png" alt="Logo Prime Despachante">
+        <h2>Resumo de Taxas – DETRAN</h2>
+    </div>
+
+    <table id="tabelaTaxas">
+        <thead>
+            <tr>
+                <th style="width: 40px;">Sel.</th>
+                <th>Serviço</th>
+                <th style="width: 120px;">Valor (R$)</th>
+            </tr>
+        </thead>
+        <tbody id="corpoTabela">
+            </tbody>
+    </table>
+
+    <div class="totais">
+        <p>Total Taxas DETRAN: <strong>R$ <span id="totalDetran">0,00</span></strong></p>
+
+        <div class="honorarios-label">
+            <span>Honorários Despachante (R$):</span>
+            <input type="number" id="honorarios" value="0" step="0.01" oninput="calcular()">
+            
+             <p style="font-size:12px; margin-top:20px; color: #666;">
+        * Preencher honorário despachante
+    </p>
+            <span id="honorariosVisual">0,00</span>
+        </div>
+
+        <p style="font-size: 22px; color: #1296DB;">
+            <strong>Total Geral: R$ <span id="totalGeral">0,00</span></strong>
+        </p>
+    </div>
+
+    <button onclick="window.print()">Gerar PDF / Imprimir Relatório</button>
+
+    <p style="font-size:12px; margin-top:20px; color: #666;">
+        * Valores baseados na tabela vigente do DETRAN. Sujeito a alterações sem aviso prévio.
+    </p>
+</div>
+
+<script>
+// Dados das taxas
+const taxas = [
+    ["Alteração de Característica", 219.02],
+    ["Alteração de Dados / Erro do Usuário", 141.16],
+    ["Alteração Restrição – Baixa Gravame", 263.35],
+    ["Autorização para Confecção de Placa", 35.19],
+    ["Baixa Gravame – Comodato", 263.35],
+    ["Baixa Gravame – Restrição Tributária", 263.35],
+    ["Gravar / Substituir Motor", 146.02],
+    ["Inclusão de Moto Nova", 193.81],
+    ["Inclusão Placa Preferencial – Veículo Novo", 511.96],
+    ["Inclusão de Veículo Novo", 193.81],
+    ["Inclusão de Gravame – Financiamento", 69.55],
+    ["Licenciamento Anual", 263.39],
+    ["Licenciamento Vencido", 332.94],
+    ["Licenciamento Vencido – Reboque/Moto", 83.72],
+    ["Mudança de Categoria", 139.15],
+    ["Nota Fiscal acima de 30 dias", 244.25],
+    ["Remarcação de Chassi", 146.02],
+    ["Segunda Via CNH", 199.55],
+    ["Guincho – Carro", 223.91],
+    ["Guincho – Moto", 72.98],
+    ["Taxa de Pátio (por dia)", 4.85],
+    ["Transferência de UF", 69.55],
+    ["Transferência de UF e Propriedade", 387.59],
+    ["Transferência de Propriedade", 318.03]
+];
+
+// Renderiza a tabela ao carregar
+const corpoTabela = document.getElementById("corpoTabela");
+taxas.forEach((t, index) => {
+    const row = document.createElement("tr");
+    row.innerHTML = `
+        <td><input type="checkbox" value="${t[1]}" onclick="calcular(this)"></td>
+        <td>${t[0]}</td>
+        <td>${t[1].toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+    `;
+    corpoTabela.appendChild(row);
+});
+
+function calcular(el) {
+    let total = 0;
+    const checkboxes = document.querySelectorAll("input[type=checkbox]");
+    
+    checkboxes.forEach(c => {
+        const linha = c.closest('tr');
+        if (c.checked) {
+            total += parseFloat(c.value);
+            linha.classList.add("selecionada");
+        } else {
+            linha.classList.remove("selecionada");
+        }
+    });
+
+    // Atualiza Total Detran
+    document.getElementById("totalDetran").innerText = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+    // Atualiza Honorários
+    const valorHonorarios = parseFloat(document.getElementById("honorarios").value) || 0;
+    document.getElementById("honorariosVisual").innerText = valorHonorarios.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+
+    // Atualiza Total Geral
+    const totalGeral = total + valorHonorarios;
+    document.getElementById("totalGeral").innerText = totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+}
+</script>
+
+</body>
+</html>
