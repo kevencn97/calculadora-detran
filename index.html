@@ -3,195 +3,313 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Calculadora de Taxas DETRAN - Prime Despachante</title>
+    <title>Relatório de Taxas - Prime Despachante</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&display=swap" rel="stylesheet">
 
     <style>
-        /* ====== ESTILO GERAL (TELA) ====== */
+        :root {
+            --primary: #1296DB;
+            --primary-dark: #0e7bb3;
+            --bg-body: #f8fafc;
+            --text-main: #1e293b;
+            --text-light: #64748b;
+            --border-color: #e2e8f0;
+        }
+
+        * { box-sizing: border-box; font-family: 'Inter', sans-serif; }
+
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: #f4f6f8;
-            padding: 20px;
-            color: #333;
+            background: var(--bg-body);
+            padding: 40px 20px;
+            color: var(--text-main);
+            margin: 0;
         }
 
         .container {
-            max-width: 800px;
+            max-width: 850px;
             margin: auto;
             background: #ffffff;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border: 1px solid var(--border-color);
         }
 
+        /* Cabeçalho */
         .header {
-            text-align: center;
-            border-bottom: 2px solid #1296DB;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 2px solid var(--primary);
             padding-bottom: 20px;
-            margin-bottom: 20px;
+            margin-bottom: 30px;
         }
 
-        .header img {
-            max-width: 150px;
-            margin-bottom: 10px;
+        .header-logo-area { text-align: left; }
+        .header-logo-area h2 { 
+            margin: 0; 
+            color: var(--primary); 
+            font-size: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-weight: 800;
+        }
+        
+        .header-info { text-align: right; color: var(--text-light); font-size: 14px; }
+
+        /* Campos de Cliente/Placa */
+        .client-info-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+            margin-bottom: 30px;
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
         }
 
+        .field-group { display: flex; flex-direction: column; }
+        .field-group label { 
+            font-size: 11px; 
+            font-weight: 700; 
+            color: var(--primary); 
+            text-transform: uppercase;
+            margin-bottom: 5px;
+        }
+        .field-group input {
+            border: 1px solid #cbd5e1;
+            padding: 10px;
+            border-radius: 6px;
+            background: white;
+            font-size: 15px;
+            outline: none;
+        }
+        .field-group input:focus { border-color: var(--primary); }
+
+        /* Tabela Estilizada */
         table {
             width: 100%;
             border-collapse: collapse;
-            margin-top: 20px;
+            margin-bottom: 30px;
         }
 
         th {
-            background: #1296DB;
-            color: white;
-            padding: 12px;
+            background: #f8fafc;
+            color: var(--text-main);
+            font-weight: 700;
+            padding: 14px;
             text-align: left;
+            border-bottom: 2px solid var(--border-color);
+            text-transform: uppercase;
+            font-size: 12px;
         }
 
         td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
+            padding: 12px 14px;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 14px;
         }
 
-        tr:hover {
-            background-color: #f9f9f9;
-        }
+        tr:nth-child(even) { background-color: #fafafa; }
+        tr:hover { background-color: #f1f5f9; }
 
-        .totais {
-            margin-top: 30px;
-            padding: 20px;
-            background: #f9f9f9;
-            border-radius: 5px;
-            font-size: 18px;
-        }
-
-        .honorarios-label {
-            margin: 15px 0;
+        /* Seção de Totais */
+        .summary-box {
             display: flex;
+            flex-direction: column;
+            align-items: flex-end;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            width: 350px;
+            font-size: 15px;
+            color: var(--text-light);
             align-items: center;
-            gap: 10px;
         }
 
-        input[type="number"] {
-            padding: 5px;
-            width: 100px;
-            border: 1px solid #ccc;
-            border-radius: 4px;
+        /* O CARTÃO AZUL DA IMAGEM */
+        .total-geral-card {
+            background: var(--primary);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            width: 350px;
+            text-align: right;
+            margin-top: 10px;
+            box-shadow: 0 10px 20px rgba(18, 150, 219, 0.3);
+            position: relative;
         }
 
+        .total-geral-card span { 
+            display: block; 
+            font-size: 11px; 
+            text-transform: uppercase; 
+            opacity: 0.9; 
+            margin-bottom: 5px;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .total-geral-card strong {
+            display: flex;
+            align-items: baseline;
+            justify-content: flex-end;
+            gap: 5px;
+        }
+
+        /* Estilo do R$ Pequeno */
+        .currency-symbol {
+            font-size: 20px;
+            font-weight: 600;
+        }
+
+        /* Estilo do Número Gigante */
+        #totalGeral {
+            font-size: 35px;
+            line-height: 1;
+            font-weight: 800;
+        }
+
+        /* Botão */
         button {
-            margin-top: 25px;
-            padding: 12px 25px;
-            background: #1296DB;
+            margin-top: 30px;
+            padding: 18px;
+            background: var(--primary);
             color: white;
             border: none;
-            border-radius: 5px;
+            border-radius: 10px;
             cursor: pointer;
-            font-weight: bold;
+            font-weight: 700;
             font-size: 16px;
-            transition: background 0.3s;
+            width: 100%;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 12px rgba(18, 150, 219, 0.2);
         }
+        button:hover { background: var(--primary-dark); transform: translateY(-2px); }
 
-        button:hover {
-            background: #0e7bb3;
-        }
-
-        /* Span para mostrar honorários no PDF sem o input */
         #honorariosVisual { display: none; }
 
         /* ====== CONFIGURAÇÃO DE IMPRESSÃO (PDF) ====== */
         @media print {
-            body {
-                background: white;
-                padding: 0;
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; border: none; max-width: 100%; padding: 0; }
+            
+            /* ESCONDE O BOTÃO */
+            button { display: none !important; }
+
+            /* Transforma inputs em texto simples negrito */
+            .field-group input {
+                border: none !important;
+                background: transparent !important;
+                padding: 0 !important;
+                font-weight: 700;
+                color: var(--text-main);
             }
 
-            .container {
-                box-shadow: none;
-                max-width: 100%;
-                padding: 10px;
+            .client-info-grid { 
+                background: #f8fafc !important; 
+                padding: 15px; 
+                border: 1px solid var(--border-color);
+                -webkit-print-color-adjust: exact;
             }
 
-            /* Esconde botões e elementos interativos */
-            button, .honorarios-label input, .header img {
-                display: none;
+            /* Esconde coluna de seleção */
+            th:first-child, td:first-child { display: none !important; }
+            
+            /* Mostra apenas o que foi marcado */
+            tbody tr:not(.selecionada) { display: none !important; }
+
+            /* FORÇA O CARTÃO AZUL NO PDF */
+            .total-geral-card { 
+                background-color: var(--primary) !important; 
+                color: white !important; 
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact;
+                box-shadow: none !important;
+                border-radius: 15px !important;
             }
 
-            /* Mostra o valor dos honorários como texto simples */
-            #honorariosVisual {
-                display: inline;
-                font-weight: bold;
+            #totalGeral, .currency-symbol, .total-geral-card span {
+                color: white !important;
             }
 
-            /* Esconde a coluna dos Checkboxes */
-            th:first-child, td:first-child {
-                display: none;
-            }
-
-            /* LÓGICA PRINCIPAL: Esconde linhas que não estão selecionadas */
-            tr:not(.selecionada):not(:first-child) {
-                display: none;
-            }
-
-            /* Estética do PDF */
-            th {
-                background: #f0f0f0 !important;
-                color: black !important;
-                border: 1px solid #ddd;
-            }
-            td {
-                border: 1px solid #ddd;
-            }
+            #honorarios { display: none; }
+            #honorariosVisual { display: inline !important; font-weight: 700; }
         }
     </style>
 </head>
-
 <body>
 
 <div class="container">
     <div class="header">
-        <img src="imgs/logo.png" alt="Logo Prime Despachante">
-        <h2>Resumo de Taxas – DETRAN</h2>
+        <div class="header-logo-area">
+            <h2>Prime Despachante</h2>
+            <small>Consultoria e Documentação Veicular</small>
+        </div>
+        <div class="header-info">
+            <strong>ORÇAMENTO DE TAXAS</strong><br>
+            <span id="dataAtual"></span>
+        </div>
+    </div>
+
+    <div class="client-info-grid">
+        <div class="field-group">
+            <label>Cliente</label>
+            <input type="text" id="nomeCliente" placeholder="Nome do cliente...">
+        </div>
+        <div class="field-group">
+            <label>Placa / Veículo</label>
+            <input type="text" id="placaVeiculo" placeholder="ABC-1234">
+        </div>
     </div>
 
     <table id="tabelaTaxas">
         <thead>
             <tr>
                 <th style="width: 40px;">Sel.</th>
-                <th>Serviço</th>
-                <th style="width: 120px;">Valor (R$)</th>
+                <th>Descrição do Serviço</th>
+                <th style="width: 140px; text-align: right;">Valor (R$)</th>
             </tr>
         </thead>
         <tbody id="corpoTabela">
             </tbody>
     </table>
 
-    <div class="totais">
-        <p>Total Taxas DETRAN: <strong>R$ <span id="totalDetran">0,00</span></strong></p>
-
-        <div class="honorarios-label">
-            <span>Honorários Despachante (R$):</span>
-            <input type="number" id="honorarios" value="0" step="0.01" oninput="calcular()">
-            
-    
-    </p>
-            <span id="honorariosVisual">0,00</span>
+    <div class="summary-box">
+        <div class="summary-item">
+            <span>Subtotal Taxas DETRAN:</span>
+            <strong>R$ <span id="totalDetran">0,00</span></strong>
+        </div>
+        
+        <div class="summary-item">
+            <span>Honorários Despachante:</span>
+            <div>
+                <input type="number" id="honorarios" value="0" step="0.01" oninput="calcular()" style="width: 100px; text-align: right; padding: 5px; border-radius: 4px; border: 1px solid #ddd;">
+                <span id="honorariosVisual">0,00</span>
+            </div>
         </div>
 
-        <p style="font-size: 22px; color: #1296DB;">
-            <strong>Total Geral: R$ <span id="totalGeral">0,00</span></strong>
-        </p>
+        <div class="total-geral-card">
+            <span>Total Geral Estimado</span>
+            <strong>
+                <span class="currency-symbol">R$</span>
+                <span id="totalGeral">0,00</span>
+            </strong>
+        </div>
     </div>
 
-    <button onclick="window.print()">Gerar PDF / Imprimir Relatório</button>
+    <button onclick="window.print()">Gerar PDF</button>
 
-    <p style="font-size:12px; margin-top:20px; color: #666;">
-        * Valores baseados na tabela vigente do DETRAN. Sujeito a alterações sem aviso prévio.
+    <p style="font-size:11px; margin-top:40px; color: var(--text-light); text-align: center; border-top: 1px solid var(--border-color); padding-top: 20px;">
+        * Este documento é apenas uma estimativa. Valores sujeitos a alteração conforme tabela oficial do DETRAN ou existência de débitos anteriores não listados.
     </p>
 </div>
 
 <script>
-// Dados das taxas
 const taxas = [
     ["Alteração de Característica", 219.02],
     ["Alteração de Dados / Erro do Usuário", 141.16],
@@ -201,12 +319,12 @@ const taxas = [
     ["Baixa Gravame – Restrição Tributária", 263.35],
     ["Gravar / Substituir Motor", 146.02],
     ["Inclusão de Moto Nova", 193.81],
-    ["Inclusão Placa Preferencial – Veículo Novo", 511.96],
+    ["Inclusão Placa Preferencial", 511.96],
     ["Inclusão de Veículo Novo", 193.81],
-    ["Inclusão de Gravame – Financiamento", 69.55],
+    ["Inclusão de Gravame", 69.55],
     ["Licenciamento Anual", 263.39],
     ["Licenciamento Vencido", 332.94],
-    ["Licenciamento Vencido – Reboque/Moto", 83.72],
+    ["Licenciamento Vencido – Moto", 83.72],
     ["Mudança de Categoria", 139.15],
     ["Nota Fiscal acima de 30 dias", 244.25],
     ["Remarcação de Chassi", 146.02],
@@ -220,19 +338,21 @@ const taxas = [
     ["Vistoria veicular", 108.00],
 ];
 
-// Renderiza a tabela ao carregar
+// Data atual
+document.getElementById("dataAtual").innerText = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
+
 const corpoTabela = document.getElementById("corpoTabela");
-taxas.forEach((t, index) => {
+taxas.sort().forEach((t) => {
     const row = document.createElement("tr");
     row.innerHTML = `
-        <td><input type="checkbox" value="${t[1]}" onclick="calcular(this)"></td>
+        <td><input type="checkbox" value="${t[1]}" onclick="calcular()"></td>
         <td>${t[0]}</td>
-        <td>${t[1].toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
+        <td style="text-align: right; font-weight: 600;">${t[1].toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</td>
     `;
     corpoTabela.appendChild(row);
 });
 
-function calcular(el) {
+function calcular() {
     let total = 0;
     const checkboxes = document.querySelectorAll("input[type=checkbox]");
     
@@ -246,16 +366,12 @@ function calcular(el) {
         }
     });
 
-    // Atualiza Total Detran
     document.getElementById("totalDetran").innerText = total.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
-    // Atualiza Honorários
     const valorHonorarios = parseFloat(document.getElementById("honorarios").value) || 0;
     document.getElementById("honorariosVisual").innerText = valorHonorarios.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
-
-    // Atualiza Total Geral
-    const totalGeral = total + valorHonorarios;
-    document.getElementById("totalGeral").innerText = totalGeral.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    
+    const totalFinal = total + valorHonorarios;
+    document.getElementById("totalGeral").innerText = totalFinal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 }
 </script>
 
