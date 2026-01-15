@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Orçamento Personalizado</title>
+    <title>Orçamento</title>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <style>
         :root {
@@ -13,6 +13,7 @@
             --text-light: #64748b;
             --bg-body: #f1f5f9;
             --border: #e2e8f0;
+            --bg-selected: #f0f9ff;
         }
 
         /* Base Senior Profissional */
@@ -31,12 +32,12 @@
             overflow: hidden;
         }
 
-        /* Header */
+        /* Header Premium */
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-bottom: 2px solid var(--primary);
+            border-bottom: 3px solid var(--primary);
             padding-bottom: 20px;
             margin-bottom: 35px;
         }
@@ -44,10 +45,10 @@
         .brand p { color: var(--text-light); font-size: 14px; font-weight: 500; }
         .doc-badge { color: var(--primary); font-weight: 800; font-size: 13px; text-transform: uppercase; letter-spacing: 1px; }
 
-        /* Box de Identificação - SEM VAZAMENTO */
+        /* Box de Identificação - Grid Blindado */
         .section-identificacao {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
             gap: 20px;
             background: #f8fafc;
             padding: 25px;
@@ -55,22 +56,28 @@
             border: 1px solid var(--border);
             margin-bottom: 40px;
         }
-        .field-group { display: flex; flex-direction: column; }
+        .field-group { display: flex; flex-direction: column; width: 100%; }
         .field-group label { font-size: 11px; font-weight: 800; color: var(--primary); text-transform: uppercase; margin-bottom: 8px; }
-        .field-group input { 
+        .field-group input, .field-group textarea { 
             width: 100%; 
             border: 1px solid #cbd5e1; padding: 12px; border-radius: 8px; font-size: 15px; font-weight: 600; outline: none;
             transition: all 0.2s;
+            background: #fff;
         }
-        .field-group input:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(18, 150, 219, 0.1); }
+        .field-group input:focus, .field-group textarea:focus { border-color: var(--primary); box-shadow: 0 0 0 3px rgba(18, 150, 219, 0.1); }
 
-        /* Tabela */
+        /* Tabela Organizada */
         .table-title { font-size: 12px; font-weight: 800; text-transform: uppercase; color: var(--text-light); margin-bottom: 15px; }
         table { width: 100%; border-collapse: collapse; margin-bottom: 30px; }
         th { font-size: 12px; color: var(--text-light); font-weight: 700; padding: 15px 12px; text-align: left; border-bottom: 2px solid var(--text-main); text-transform: uppercase; }
         td { padding: 18px 12px; border-bottom: 1px solid var(--border); font-size: 15px; font-weight: 500; }
         
-        tr.selecionada td { color: var(--primary); font-weight: 600; background-color: #f0f9ff; }
+        /* Estilo Selecionado com Azulzinho Claro */
+        tr.selecionada td { 
+            color: var(--primary); 
+            font-weight: 600; 
+            background-color: var(--bg-selected) !important; 
+        }
 
         /* Alinhamento de R$ */
         .value-wrapper { display: flex; justify-content: flex-end; align-items: center; font-weight: 700; }
@@ -79,11 +86,28 @@
 
         .category-row td { background: #f8fafc; font-size: 11px; font-weight: 800; color: var(--text-light); text-transform: uppercase; padding: 10px 12px; border: none; }
 
-        /* Adição Manual */
+        /* Adição Manual e Observações ao Final */
         .section-manual {
-            background: #fff; padding: 25px; border-radius: 12px; margin-bottom: 40px; 
+            background: #fff; padding: 25px; border-radius: 12px; margin-bottom: 20px; 
             border: 1px dashed var(--primary); display: flex; flex-wrap: wrap; gap: 20px; align-items: flex-end;
         }
+        .section-observacoes {
+            background: #f8fafc; padding: 25px; border-radius: 12px; border: 1px solid var(--border); margin-bottom: 40px;
+        }
+
+        .section-observacoes textarea {
+            width: 100%;
+            border: 1px solid #cbd5e1;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 14px;
+            resize: none;
+            min-height: 80px;
+            overflow-y: hidden;
+        }
+
+        .observacoes-print { display: none; white-space: pre-wrap; word-wrap: break-word; font-size: 14px; color: var(--text-main); margin-top: 10px; }
+
         .btn-add { background: var(--text-main); color: white; padding: 14px 28px; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
 
         /* Rodapé e Totais */
@@ -93,7 +117,7 @@
         .totals-box { width: 340px; display: flex; flex-direction: column; gap: 15px; }
         .total-line { display: flex; justify-content: space-between; font-size: 15px; font-weight: 600; }
         
-        /* CARD TOTAL GERAL PREMIUM */
+        /* CARD TOTAL GERAL PREMIUM - PREENCHIDO */
         .grand-total-card {
             background: var(--primary); 
             color: white; 
@@ -128,22 +152,30 @@
 
         /* ====== MEDIA QUERIES MOBILE ====== */
         @media (max-width: 600px) {
+            body { padding: 20px 10px; }
             .container { padding: 20px; }
             .header { flex-direction: column; text-align: center; }
-            .section-identificacao { grid-template-columns: 1fr; }
+            .section-identificacao, .section-manual { grid-template-columns: 1fr; }
             .footer-grid { flex-direction: column; align-items: stretch; gap: 30px; }
             .totals-box { width: 100%; }
             .actions { grid-template-columns: 1fr; }
         }
 
-        /* ====== IMPRESSÃO PDF (GARANTE TEXTO DO TOTAL) ====== */
+        /* ====== IMPRESSÃO PDF IMPECÁVEL ====== */
         @media print {
             @page { margin: 10mm; size: A4; }
             body { background: white; padding: 0; }
             .container { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; overflow: visible; }
             .actions, .section-manual, th:first-child, td:first-child, .category-row, #filterContainer { display: none !important; }
             
-            /* Ajuste do Card de Total no PDF */
+            /* ERRO WEBKIT FIX: Standard + Prefixo */
+            tr.selecionada td { 
+                background-color: #f0f9ff !important; 
+                color: var(--primary) !important;
+                -webkit-print-color-adjust: exact; 
+                print-color-adjust: exact; 
+            }
+
             .grand-total-card {
                 background-color: var(--primary) !important;
                 color: white !important;
@@ -156,27 +188,31 @@
                 display: block !important;
             }
 
-            /* Garante visibilidade do rótulo no PDF */
             .grand-total-label { 
                 color: white !important; 
                 display: block !important;
                 -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
                 opacity: 1 !important;
             }
 
-            .grand-total-value .amount { font-size: 34px !important; color: white !important; }
-            .grand-total-value .symbol { color: white !important; }
+            .grand-total-value .amount, .grand-total-value .symbol { color: white !important; }
 
             .header, .brand h2, .doc-badge, .fidelity-footer {
                 color: var(--primary) !important;
                 -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
 
-            .section-identificacao { 
+            .section-identificacao, .section-observacoes { 
                 background: #f8fafc !important; 
                 border: 1px solid #e2e8f0 !important;
-                grid-template-columns: 1fr 1fr !important;
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
             }
+
+            .section-observacoes textarea { display: none !important; }
+            .observacoes-print { display: block !important; }
             .field-group input { border: none !important; padding: 0 !important; font-size: 18px !important; font-weight: 700 !important; background: transparent !important; }
             
             tbody tr:not(.selecionada) { display: none !important; }
@@ -241,6 +277,14 @@
         <button class="btn-add" onclick="addCustomService()">+ Adicionar</button>
     </section>
 
+    <section class="section-observacoes">
+        <div class="field-group">
+            <label>Observações do Orçamento</label>
+            <textarea id="observacoes" placeholder="Informações adicionais para este orçamento..." oninput="syncObs()"></textarea>
+            <div id="observacoesPrint" class="observacoes-print"></div>
+        </div>
+    </section>
+
     <div class="footer-grid">
         <div class="legal-box">
             <p><strong>Nota Legal:</strong> Orçamento baseado em informações prévias. Valores sujeitos a alteração conforme tabela oficial do DETRAN ou existência de débitos não declarados.</p><br>
@@ -276,13 +320,12 @@
     </footer>
 
     <div class="actions">
-        <button class="btn btn-primary" onclick="validarEImprimir()">📄 Gerar Orçamento </button>
+        <button class="btn btn-primary" onclick="validarEImprimir()">📄 Gerar Orçamento Profissional</button>
         <button id="btnCopy" class="btn btn-success" onclick="copiarResumo()">📋 Copiar Resumo Completo WhatsApp</button>
     </div>
 </div>
 
 <script>
-// LISTA COMPLETA - 25 ITENS
 const listaTaxas = [
     { cat: "Transferência e Registro", nome: "Alteração de Característica", valor: 219.02 },
     { cat: "Transferência e Registro", nome: "Alteração de Dados / Erro do Usuário", valor: 141.16 },
@@ -315,15 +358,29 @@ let customTaxas = [];
 
 function renderTable() {
     const corpo = document.getElementById("corpoTabela");
+    
+    // PRESERVAÇÃO DE ESTADO: Mapeia o que já estava marcado [NOVO]
+    const nomesMarcados = Array.from(document.querySelectorAll("#corpoTabela input[type=checkbox]:checked"))
+                               .map(cb => cb.closest('tr').cells[1].innerText);
+
     corpo.innerHTML = "";
     let currentCat = "";
+    
     listaTaxas.sort((a,b) => a.cat.localeCompare(b.cat)).forEach(t => {
         if(t.cat !== currentCat) {
             currentCat = t.cat;
             corpo.innerHTML += `<tr class="category-row"><td colspan="3">${currentCat}</td></tr>`;
         }
-        corpo.innerHTML += `<tr><td><input type="checkbox" value="${t.valor}" onclick="calcular()"></td><td>${t.nome}</td><td class="value-wrapper"><span class="value-symbol">R$</span><span class="value-amount">${t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></td></tr>`;
+        
+        // Verifica se este item deve ser renderizado como marcado [NOVO]
+        const estaMarcado = nomesMarcados.includes(t.nome);
+        corpo.innerHTML += `<tr class="${estaMarcado ? 'selecionada' : ''}">
+            <td><input type="checkbox" value="${t.valor}" ${estaMarcado ? 'checked' : ''} onclick="calcular()"></td>
+            <td>${t.nome}</td>
+            <td class="value-wrapper"><span class="value-symbol">R$</span><span class="value-amount">${t.valor.toLocaleString('pt-BR', { minimumFractionDigits: 2 })}</span></td>
+        </tr>`;
     });
+
     if (customTaxas.length > 0) {
         corpo.innerHTML += `<tr class="category-row"><td colspan="3">Serviços Adicionais Extra</td></tr>`;
         customTaxas.forEach(t => {
@@ -336,13 +393,25 @@ function calcular() {
     let subtotal = 0;
     document.querySelectorAll("#corpoTabela input[type=checkbox]").forEach(c => {
         const tr = c.closest('tr');
-        if(c.checked) { subtotal += parseFloat(c.value); tr.classList.add("selecionada"); }
-        else { tr.classList.remove("selecionada"); }
+        if(c.checked) { 
+            subtotal += parseFloat(c.value); 
+            tr.classList.add("selecionada"); 
+        } else { 
+            tr.classList.remove("selecionada"); 
+        }
     });
     const honor = parseFloat(document.getElementById("honorarios").value) || 0;
     document.getElementById("totalDetran").innerText = subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
     document.getElementById("honorariosVisual").innerText = honor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
     document.getElementById("totalGeral").innerText = (subtotal + honor).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+}
+
+function syncObs() {
+    const txt = document.getElementById("observacoes");
+    const print = document.getElementById("observacoesPrint");
+    print.innerText = txt.value;
+    txt.style.height = 'auto';
+    txt.style.height = (txt.scrollHeight) + 'px';
 }
 
 function addCustomService() {
@@ -352,7 +421,7 @@ function addCustomService() {
     customTaxas.push({ nome, valor });
     document.getElementById("customServiceName").value = "";
     document.getElementById("customServiceValue").value = "";
-    renderTable();
+    renderTable(); // Agora as checkboxes anteriores não desmarcam mais!
     calcular();
 }
 
@@ -380,6 +449,7 @@ function copiarResumo() {
     const subtotal = document.getElementById("totalDetran").innerText;
     const honorarios = document.getElementById("honorariosVisual").innerText;
     const totalGeral = document.getElementById("totalGeral").innerText;
+    const obs = document.getElementById("observacoes").value.trim();
 
     let servicosTexto = "";
     document.querySelectorAll("#corpoTabela input[type=checkbox]:checked").forEach(c => {
@@ -391,13 +461,19 @@ function copiarResumo() {
 
     if (!servicosTexto) { alert("Por favor, selecione ao menos um serviço."); return; }
 
-    const texto = `✅ *ORÇAMENTO - PRIME DESPACHANTE*\n` +
+    let texto = `✅ *ORÇAMENTO - PRIME DESPACHANTE*\n` +
                   `--------------------------------------------\n` +
                   `👤 *Cliente:* ${nome}\n` +
                   `🚗 *Placa/Veículo:* ${placa}\n` +
                   `📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}\n` +
-                  `--------------------------------------------\n` +
-                  `📋 *SERVIÇOS SELECIONADOS:*\n` +
+                  `--------------------------------------------\n`;
+
+    if (obs) {
+        texto += `📝 *Observações:* ${obs}\n` +
+                 `--------------------------------------------\n`;
+    }
+
+    texto += `📋 *SERVIÇOS SELECIONADOS:*\n` +
                   `${servicosTexto}` +
                   `--------------------------------------------\n` +
                   `💰 *Subtotal Taxas:* R$ ${subtotal}\n` +
@@ -411,7 +487,10 @@ function copiarResumo() {
         const originalText = btn.innerHTML;
         btn.innerHTML = "✅ Copiado!";
         btn.style.background = "#059669";
-        setTimeout(() => { btn.innerHTML = originalText; btn.style.background = ""; }, 2000);
+        setTimeout(() => { 
+            btn.innerHTML = originalText;
+            btn.style.background = ""; 
+        }, 2000);
     });
 }
 
