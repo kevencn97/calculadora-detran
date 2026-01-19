@@ -161,14 +161,15 @@
             .actions { grid-template-columns: 1fr; }
         }
 
-        /* ====== IMPRESSÃO PDF IMPECÁVEL ====== */
+        /* ====== IMPRESSÃO PDF CORRIGIDA ====== */
         @media print {
             @page { margin: 10mm; size: A4; }
             body { background: white; padding: 0; }
             .container { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; overflow: visible; }
+            
+            /* Esconde botões e interface */
             .actions, .section-manual, th:first-child, td:first-child, .category-row, #filterContainer { display: none !important; }
             
-            /* ERRO WEBKIT FIX: Standard + Prefixo */
             tr.selecionada td { 
                 background-color: #f0f9ff !important; 
                 color: var(--primary) !important;
@@ -182,7 +183,9 @@
                 -webkit-print-color-adjust: exact;
                 print-color-adjust: exact;
                 border: none !important;
-                width: 320px !important;
+                box-shadow: none !important; /* CORREÇÃO: Remove o fundo azul borrado do celular */
+                width: 100% !important; /* CORREÇÃO: Melhora ajuste no celular */
+                max-width: 300px !important;
                 margin-left: auto !important;
                 padding: 15px 20px !important;
                 display: block !important;
@@ -359,8 +362,6 @@ let customTaxas = [];
 
 function renderTable() {
     const corpo = document.getElementById("corpoTabela");
-    
-    // PRESERVAÇÃO DE ESTADO: Mapeia o que já estava marcado [NOVO]
     const nomesMarcados = Array.from(document.querySelectorAll("#corpoTabela input[type=checkbox]:checked"))
                                .map(cb => cb.closest('tr').cells[1].innerText);
 
@@ -373,7 +374,6 @@ function renderTable() {
             corpo.innerHTML += `<tr class="category-row"><td colspan="3">${currentCat}</td></tr>`;
         }
         
-        // Verifica se este item deve ser renderizado como marcado [NOVO]
         const estaMarcado = nomesMarcados.includes(t.nome);
         corpo.innerHTML += `<tr class="${estaMarcado ? 'selecionada' : ''}">
             <td><input type="checkbox" value="${t.valor}" ${estaMarcado ? 'checked' : ''} onclick="calcular()"></td>
@@ -422,7 +422,7 @@ function addCustomService() {
     customTaxas.push({ nome, valor });
     document.getElementById("customServiceName").value = "";
     document.getElementById("customServiceValue").value = "";
-    renderTable(); // Agora as checkboxes anteriores não desmarcam mais!
+    renderTable();
     calcular();
 }
 
