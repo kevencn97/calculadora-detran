@@ -225,6 +225,34 @@
             
             td { border: none !important; padding: 10px 12px !important; }
         }
+
+        /* Barra fixa apenas no mobile */
+.sticky-footer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background: var(--primary);
+    color: white;
+    padding: 15px 20px;
+    display: none; /* Escondido por padrão */
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
+    z-index: 1000;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+@media (max-width: 600px) {
+    .sticky-footer { display: flex; }
+    body { padding-bottom: 80px; } /* Espaço para não cobrir o conteúdo */
+}
+
+/* Garante que NUNCA apareça na impressão */
+@media print {
+    .sticky-footer { display: none !important; }
+}
     </style>
 </head>
 <body>
@@ -326,6 +354,10 @@
         <button class="btn btn-primary" onclick="validarEImprimir()">📄 Gerar Orçamento</button>
         <button id="btnCopy" class="btn btn-success" onclick="copiarResumo()">📋 Copiar Resumo Completo WhatsApp</button>
     </div>
+
+    <div id="stickyTotal" class="sticky-footer">
+    <span>Total: <strong id="totalSticky">R$ 0,00</strong></span>
+</div> 
 </div>
 
 <script>
@@ -405,6 +437,8 @@ function calcular() {
     document.getElementById("totalDetran").innerText = subtotal.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
     document.getElementById("honorariosVisual").innerText = honor.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
     document.getElementById("totalGeral").innerText = (subtotal + honor).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+   
+document.getElementById("totalSticky").innerText = (subtotal + honor).toLocaleString('pt-BR', { minimumFractionDigits: 2 });
 }
 
 function syncObs() {
@@ -429,8 +463,15 @@ function addCustomService() {
 function validarEImprimir() {
     const nome = document.getElementById("nomeCliente").value.trim();
     const placa = document.getElementById("placaVeiculo").value.trim();
-    if (!nome || !placa) { alert("⚠️ Nome e Placa obrigatórios para o PDF."); return; }
+    if (!nome || !placa) { alert("⚠️ Nome e Placa obrigatórios."); return; }
+    
+    const tituloOriginal = document.title;
+    document.title = `Orcamento_${nome.replace(/\s+/g, '_')}_${placa.toUpperCase()}`;
+    
     window.print();
+    
+    
+    setTimeout(() => { document.title = tituloOriginal; }, 100);
 }
 
 function filterTable() {
