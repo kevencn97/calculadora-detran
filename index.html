@@ -162,71 +162,139 @@
         }
 
         /* ====== IMPRESSÃO PDF CORRIGIDA ====== */
-        @media print {
-            @page { margin: 10mm; size: A4; }
-            body { background: white; padding: 0; }
-            .container { box-shadow: none; border: none; width: 100%; max-width: 100%; padding: 0; overflow: visible; }
-            
-            /* Esconde botões e interface */
-            .actions, .section-manual, th:first-child, td:first-child, .category-row, #filterContainer { display: none !important; }
-            
-            tr.selecionada td { 
-                background-color: #f0f9ff !important; 
-                color: var(--primary) !important;
-                -webkit-print-color-adjust: exact; 
-                print-color-adjust: exact; 
-            }
+        /* ====== IMPRESSÃO PDF OTIMIZADA (1 PÁGINA) ====== */
+@media print {
+    @page { 
+        margin: 5mm; /* Margens mínimas para aproveitar a folha */
+        size: A4; 
+    }
 
-            .grand-total-card {
-                background-color: var(--primary) !important;
-                color: white !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                border: none !important;
-                box-shadow: none !important; /* CORREÇÃO: Remove o fundo azul borrado do celular */
-                width: 100% !important; /* CORREÇÃO: Melhora ajuste no celular */
-                max-width: 300px !important;
-                margin-left: auto !important;
-                padding: 15px 20px !important;
-                display: block !important;
-            }
+    body { 
+        background: white; 
+        padding: 0; 
+        /* Reduz levemente o tamanho geral para garantir 1 página */
+        zoom: 0.90; 
+        -webkit-print-color-adjust: exact; 
+        print-color-adjust: exact;
+    }
 
-            .grand-total-label { 
-                color: white !important; 
-                display: block !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-                opacity: 1 !important;
-            }
+    .container { 
+        box-shadow: none; 
+        border: none; 
+        width: 100%; 
+        max-width: 100%; 
+        padding: 0 10px; /* Pequeno respiro lateral */
+        margin: 0;
+    }
+    
+    /* Esconde elementos desnecessários na impressão */
+    .actions, 
+    .section-manual, 
+    .sticky-footer, /* Remove a barra azul vazia */
+    #filterContainer,
+    #btnCopy { 
+        display: none !important; 
+    }
+    
+    /* Cabeçalho compacto */
+    .header {
+        margin-bottom: 15px !important;
+        padding-bottom: 10px !important;
+        border-bottom: 2px solid var(--primary);
+    }
+    .brand h2 { font-size: 24px !important; margin: 0; }
 
-            .grand-total-value .amount, .grand-total-value .symbol { color: white !important; }
+    /* Tabela limpa */
+    th { padding: 5px !important; font-size: 11px !important; }
+    td { padding: 5px !important; border-bottom: 1px solid #eee !important; }
+    
+    /* Esconde linhas não selecionadas */
+    tbody tr:not(.selecionada) { display: none !important; }
+    
+    /* Destaque para selecionados na impressão */
+    tr.selecionada td { 
+        background-color: #f0f9ff !important; 
+        color: var(--primary) !important;
+        font-weight: 700;
+    }
 
-            .header, .brand h2, .doc-badge, .fidelity-footer {
-                color: var(--primary) !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+    /* Input inputs invisíveis, mostra só o texto */
+    .field-group input { border: none !important; padding: 0 !important; font-weight: 700 !important; background: transparent !important; }
+    .section-identificacao { margin-bottom: 10px !important; padding: 10px !important; }
 
-            .section-identificacao, .section-observacoes { 
-                background: #f8fafc !important; 
-                border: 1px solid #e2e8f0 !important;
-                -webkit-print-color-adjust: exact;
-                print-color-adjust: exact;
-            }
+    /* ====== O SEGREDO PARA 1 PÁGINA: RODAPÉ LADO A LADO ====== */
+   /* Dentro de @media print { ... } */
 
-            .section-observacoes textarea { display: none !important; }
-            .observacoes-print { display: block !important; }
-            .field-group input { border: none !important; padding: 0 !important; font-size: 18px !important; font-weight: 700 !important; background: transparent !important; }
-            
-            tbody tr:not(.selecionada) { display: none !important; }
-            .value-symbol, .symbol { display: inline-block !important; width: 45px !important; text-align: left !important; }
-            #honorarios { display: none; }
-            #honorariosVisual { display: inline !important; font-weight: 700; }
-            
-            td { border: none !important; padding: 10px 12px !important; }
-        }
+/* ALINHAMENTO CORRIGIDO: Tudo alinhado por baixo (Rodapé) */
+.footer-grid { 
+    display: flex !important; 
+    flex-direction: row !important; 
+    justify-content: space-between !important;
+    align-items: flex-end !important; /* ISSO AQUI FAZ O TEXTO DESCER */
+    gap: 20px !important;
+    margin-top: 10px !important;
+    page-break-inside: avoid;
+}
+
+/* Garante que na tela normal também fique embaixo */
+.footer-grid {
+    align-items: flex-end; 
+}
+
+    /* Nota legal menor e à esquerda */
+    .legal-box { 
+        width: 55% !important; 
+        font-size: 10px !important; 
+        line-height: 1.4;
+        text-align: justify;
+    }
+
+    /* Totais à direita */
+    .totals-box { 
+        width: 40% !important; 
+        margin-top: 0 !important;
+    }
+
+    /* Ajuste do Card Total */
+    .grand-total-card {
+        background-color: var(--primary) !important;
+        color: white !important;
+        padding: 15px !important;
+        border-radius: 8px !important;
+        margin-top: 10px !important;
+        box-shadow: none !important;
+    }
+    .grand-total-label { color: white !important; margin-bottom: 5px !important; font-size: 10px !important; }
+    .grand-total-value .amount { font-size: 32px !important; color: white !important; }
+    .grand-total-value .symbol { font-size: 18px !important; color: white !important; }
+
+    /* Ajuste do PIX na impressão */
+    .pix-box { 
+        background: transparent !important; 
+        border: 1px solid #ddd !important; 
+        margin-top: 10px !important;
+        padding: 10px !important;
+    }
+    .pix-input { 
+        border: none !important; 
+        background: transparent !important; 
+        text-align: right !important; 
+        padding: 0 !important;
+        font-weight: 700 !important;
+    }
+    .pix-header { margin-bottom: 2px !important; font-size: 10px !important; }
+
+    /* Observações */
+    .section-observacoes textarea { display: none !important; }
+    .observacoes-print { display: block !important; font-size: 12px; margin-top: 5px; }
+    
+    /* Input de honorários vira texto */
+    #honorarios { display: none !important; }
+    #honorariosVisual { display: inline-block !important; }
+}
 
         /* Barra fixa apenas no mobile */
+/* Correção da Barra Azul (Rodapé) */
 .sticky-footer {
     position: fixed;
     bottom: 0;
@@ -235,13 +303,21 @@
     background: var(--primary);
     color: white;
     padding: 15px 20px;
-    display: none; /* Escondido por padrão */
+    display: none; /* ESCONDIDO POR PADRÃO NO PC */
     justify-content: space-between;
     align-items: center;
     box-shadow: 0 -4px 10px rgba(0,0,0,0.1);
     z-index: 1000;
-    font-size: 18px;
-    font-weight: 700;
+}
+
+/* Só aparece no celular */
+@media (max-width: 600px) {
+    .sticky-footer { display: flex; }
+}
+
+/* Garante que nunca saia na impressão */
+@media print {
+    .sticky-footer { display: none !important; }
 }
 
 @media (max-width: 600px) {
@@ -252,6 +328,96 @@
 /* Garante que NUNCA apareça na impressão */
 @media print {
     .sticky-footer { display: none !important; }
+}
+
+/* --- NOVO: Estilo da Caixa Pix --- */
+.pix-box {
+    margin-top: 15px;
+    background: #f0f9ff; /* Azul bem clarinho */
+    border: 1px dashed var(--primary);
+    border-radius: 12px;
+    padding: 15px;
+    text-align: right;
+}
+
+.pix-header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 8px;
+    color: var(--primary);
+    font-weight: 800;
+    font-size: 12px;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+}
+
+.pix-inputs-row {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+}
+
+.pix-input {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    color: var(--text-main);
+    background: white;
+    outline: none;
+}
+
+.pix-input:focus { border-color: var(--primary); }
+
+#chavePix { width: 100%; font-weight: 600; text-align: right; }
+#tipoPix { width: 100px; text-align: right; cursor: pointer; }
+
+/* Ajuste para Impressão do Pix */
+@media print {
+    .pix-box { 
+        background: transparent !important; 
+        border: 1px solid #e2e8f0 !important; 
+        margin-top: 10px !important;
+        page-break-inside: avoid;
+        -webkit-print-color-adjust: exact;
+        print-color-adjust: exact;
+    }
+    .pix-input {
+        border: none !important;
+        background: transparent !important;
+        padding: 0 !important;
+        text-align: right !important;
+        font-weight: 700 !important;
+        font-size: 14px !important;
+        appearance: none; /* Remove seta do select */
+        -webkit-appearance: none;
+    }
+    /* Esconde o placeholder na impressão se estiver vazio */
+    .pix-input::placeholder { color: transparent; }
+}
+/* --- VALIDAÇÃO VISUAL --- */
+.input-erro {
+    border-color: #ef4444 !important; /* Vermelho */
+    background-color: #fef2f2 !important;
+    color: #b91c1c !important;
+}
+
+.input-sucesso {
+    border-color: #10b981 !important; /* Verde */
+    background-color: #f0fdf4 !important;
+    color: #15803d !important;
+}
+
+/* Pequena mensagem de erro que aparece embaixo */
+#msgErroPix {
+    font-size: 10px;
+    color: #ef4444;
+    font-weight: 700;
+    margin-top: 4px;
+    text-align: right;
+    display: none; /* Escondido por padrão */
 }
     </style>
 </head>
@@ -322,28 +488,50 @@
             <p><strong>Validade do Orçamento:</strong> 5 dias úteis.</p>
         </div>
         <div class="totals-box">
-            <div class="total-line">
-                <span>Taxas DETRAN</span>
-                <div class="value-wrapper"><span class="value-symbol">R$</span><span class="value-amount" id="totalDetran">0,00</span></div>
-            </div>
-            <div class="total-line">
-                <span>Honorários de Serviço</span>
-                <div class="value-wrapper">
-                    <span class="value-symbol">R$</span>
-                    <div class="value-amount">
-                        <input type="number" id="honorarios" value="0" step="0.01" oninput="calcular()" style="width: 90px; text-align: right; border: none; font-weight: 700; background: #f1f5f9; padding: 6px; border-radius: 6px;">
-                        <span id="honorariosVisual" style="display:none">0,00</span>
-                    </div>
-                </div>
-            </div>
-            <div class="grand-total-card">
-                <span class="grand-total-label">Total Geral do Orçamento</span>
-                <div class="grand-total-value">
-                    <span class="symbol">R$</span>
-                    <span id="totalGeral" class="amount">0,00</span>
-                </div>
+    <div class="total-line">
+        <span>Taxas DETRAN</span>
+        <div class="value-wrapper"><span class="value-symbol">R$</span><span class="value-amount" id="totalDetran">0,00</span></div>
+    </div>
+    <div class="total-line">
+        <span>Honorários de Serviço</span>
+        <div class="value-wrapper">
+            <span class="value-symbol">R$</span>
+            <div class="value-amount">
+                <input type="number" id="honorarios" value="0" step="0.01" oninput="calcular()" style="width: 90px; text-align: right; border: none; font-weight: 700; background: #f1f5f9; padding: 6px; border-radius: 6px;">
+                <span id="honorariosVisual" style="display:none">0,00</span>
             </div>
         </div>
+    </div>
+    
+    <div class="grand-total-card">
+        <span class="grand-total-label">Total Geral do Orçamento</span>
+        <div class="grand-total-value">
+            <span class="symbol">R$</span>
+            <span id="totalGeral" class="amount">0,00</span>
+        </div>
+    </div>
+
+    <div class="pix-box">
+    <div class="pix-header">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><path d="M12 8v8"></path><path d="M8 12h8"></path></svg>
+        Dados para Pagamento (Pix)
+    </div>
+    <div class="pix-inputs-row">
+        <select id="tipoPix" class="pix-input">
+            <option value="CPF/CNPJ">CPF/CNPJ</option>
+            <option value="Celular">Celular</option>
+            <option value="E-mail">E-mail</option>
+            <option value="Chave Aleatória">Chave Aleatória</option>
+        </select>
+    </div>
+    <div class="pix-inputs-row" style="margin-top: 5px; flex-direction: column;">
+        <input type="text" id="chavePix" class="pix-input" placeholder="000.000.000-00">
+        <span id="msgErroPix">Formato inválido</span> </div>
+    <div class="pix-inputs-row" style="margin-top: 5px;">
+        <input type="text" id="beneficiarioPix" class="pix-input" placeholder="Nome do Beneficiário" style="font-size: 11px; color: #64748b;">
+    </div>
+</div>
+</div>
     </div>
 
     <footer class="fidelity-footer">
@@ -486,44 +674,73 @@ function filterTable() {
 }
 
 function copiarResumo() {
+    // 1. Coleta dados básicos
     const nome = document.getElementById("nomeCliente").value || "Cliente";
     const placa = document.getElementById("placaVeiculo").value || "---";
     const subtotal = document.getElementById("totalDetran").innerText;
-    const honorarios = document.getElementById("honorariosVisual").innerText;
+    
+    // 2. Trata honorários
+    const honorariosInput = parseFloat(document.getElementById("honorarios").value) || 0;
+    const honorarios = honorariosInput.toLocaleString('pt-BR', { minimumFractionDigits: 2 });
+    
     const totalGeral = document.getElementById("totalGeral").innerText;
     const obs = document.getElementById("observacoes").value.trim();
 
+    // 3. Coleta dados do PIX (Novos campos)
+    const chavePix = document.getElementById("chavePix").value.trim();
+    const tipoPix = document.getElementById("tipoPix").value;
+    const beneficiario = document.getElementById("beneficiarioPix").value.trim();
+
+    // 4. Monta lista de serviços
     let servicosTexto = "";
     document.querySelectorAll("#corpoTabela input[type=checkbox]:checked").forEach(c => {
         const tr = c.closest('tr');
         const srvNome = tr.cells[1].innerText;
-        const srvValor = tr.cells[2].innerText;
-        servicosTexto += `• ${srvNome}: R$ ${srvValor}\n`;
+        // Pega valor limpo
+        const srvValor = tr.querySelector('.value-amount').innerText.trim();
+        servicosTexto += `▪️ ${srvNome}: R$ ${srvValor}\n`;
     });
 
     if (!servicosTexto) { alert("Por favor, selecione ao menos um serviço."); return; }
 
+    // 5. Constrói o texto final
+    const divisor = "━━━━━━━━━━━━━━━━━━━";
+
     let texto = `✅ *ORÇAMENTO - PRIME DESPACHANTE*\n` +
-                  `--------------------------------------------\n` +
+                  `${divisor}\n` +
                   `👤 *Cliente:* ${nome}\n` +
                   `🚗 *Placa/Veículo:* ${placa}\n` +
                   `📅 *Data:* ${new Date().toLocaleDateString('pt-BR')}\n` +
-                  `--------------------------------------------\n`;
+                  `${divisor}\n`;
 
     if (obs) {
         texto += `📝 *Observações:* ${obs}\n` +
-                 `--------------------------------------------\n`;
+                 `${divisor}\n`;
     }
 
     texto += `📋 *SERVIÇOS SELECIONADOS:*\n` +
-                  `${servicosTexto}` +
-                  `--------------------------------------------\n` +
-                  `💰 *Subtotal Taxas:* R$ ${subtotal}\n` +
-                  `🔧 *Honorários:* R$ ${honorarios}\n` +
-                  `⭐ *TOTAL GERAL: R$ ${totalGeral}*\n` +
-                  `--------------------------------------------\n` +
-                  `_"Sua tranquilidade é a nossa prioridade!"_`;
+             `${servicosTexto}` +
+             `${divisor}\n` +
+             `💰 *Subtotal Taxas:* R$ ${subtotal}\n` +
+             `🔧 *Honorários:* R$ ${honorarios}\n` +
+             `⭐ *TOTAL GERAL: R$ ${totalGeral}*\n` +
+             `${divisor}\n`;
 
+    // 6. Lógica do Pix: Só aparece se a chave for preenchida
+    if (chavePix) {
+        texto += `💠 *DADOS PARA PAGAMENTO (PIX)*\n` +
+                 `🔑 *Tipo:* ${tipoPix}\n` +
+                 `🔢 *Chave:* ${chavePix}\n`;
+        
+        if (beneficiario) {
+            texto += `👤 *Beneficiário:* ${beneficiario}\n`;
+        }
+        texto += `${divisor}\n`;
+    }
+
+    texto += `_"Sua tranquilidade é a nossa prioridade!"_`;
+
+    // 7. Copia para a área de transferência
     navigator.clipboard.writeText(texto).then(() => {
         const btn = document.getElementById("btnCopy");
         const originalText = btn.innerHTML;
@@ -535,9 +752,103 @@ function copiarResumo() {
         }, 2000);
     });
 }
-
 document.getElementById("dataAtual").innerText = new Date().toLocaleDateString('pt-BR', { day: '2-digit', month: 'long', year: 'numeric' });
 renderTable();
+
+/* --- MÁSCARAS E VALIDAÇÃO RIGOROSA DO PIX --- */
+const inputChave = document.getElementById("chavePix");
+const selectTipo = document.getElementById("tipoPix");
+const msgErro = document.getElementById("msgErroPix");
+
+// Função para limpar estados de erro/sucesso
+function resetarValidacao() {
+    inputChave.classList.remove("input-erro", "input-sucesso");
+    msgErro.style.display = "none";
+}
+
+// 1. Configura o campo quando troca o tipo
+selectTipo.addEventListener("change", function() {
+    inputChave.value = "";
+    resetarValidacao();
+    
+    if (this.value === "Celular") {
+        inputChave.placeholder = "(00) 90000-0000";
+        inputChave.setAttribute("maxlength", "15"); // (XX) XXXXX-XXXX
+    } else if (this.value === "CPF/CNPJ") {
+        inputChave.placeholder = "000.000.000-00";
+        inputChave.setAttribute("maxlength", "18"); // CNPJ formatado
+    } else if (this.value === "E-mail") {
+        inputChave.placeholder = "exemplo@email.com";
+        inputChave.removeAttribute("maxlength");
+    } else {
+        inputChave.placeholder = "Chave Aleatória";
+        inputChave.removeAttribute("maxlength");
+    }
+});
+
+// 2. Máscara + Validação ao digitar
+inputChave.addEventListener("input", function(e) {
+    const tipo = selectTipo.value;
+    let valor = e.target.value;
+    let valido = false;
+
+    resetarValidacao();
+
+    // --- LOGICA DE MÁSCARA (FORMATAR) ---
+    if (tipo === "Celular") {
+        valor = valor.replace(/\D/g, ""); // Remove letras
+        valor = valor.replace(/^(\d{2})(\d)/g, "($1) $2");
+        valor = valor.replace(/(\d{5})(\d)/, "$1-$2");
+        e.target.value = valor; // Aplica visualmente
+        
+        // Validação: Tem que ter 11 numeros (DDD + 9 digitos)
+        const apenasNumeros = valor.replace(/\D/g, "");
+        if (apenasNumeros.length === 11) valido = true;
+    } 
+    else if (tipo === "CPF/CNPJ") {
+        valor = valor.replace(/\D/g, ""); 
+        
+        if (valor.length <= 11) {
+            valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+            valor = valor.replace(/(\d{3})(\d)/, "$1.$2");
+            valor = valor.replace(/(\d{3})(\d{1,2})$/, "$1-$2");
+        } else {
+            valor = valor.replace(/^(\d{2})(\d)/, "$1.$2");
+            valor = valor.replace(/^(\d{2})\.(\d{3})(\d)/, "$1.$2.$3");
+            valor = valor.replace(/\.(\d{3})(\d)/, ".$1/$2");
+            valor = valor.replace(/(\d{4})(\d)/, "$1-$2");
+        }
+        e.target.value = valor;
+
+        // Validação: CPF (11) ou CNPJ (14)
+        const apenasNumeros = valor.replace(/\D/g, "");
+        if (apenasNumeros.length === 11 || apenasNumeros.length === 14) valido = true;
+    }
+    else if (tipo === "E-mail") {
+        // Regex simples de email: algo@algo.algo
+        const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (emailPattern.test(valor)) valido = true;
+    }
+    else {
+        // Chave aleatória: valida se tem pelo menos 10 caracteres
+        if (valor.length > 10) valido = true;
+    }
+
+    // --- FEEDBACK VISUAL ---
+    if (valor.length > 0) {
+        if (valido) {
+            inputChave.classList.add("input-sucesso");
+        } else {
+            inputChave.classList.add("input-erro");
+            msgErro.style.display = "block";
+            
+            // Mensagens específicas
+            if(tipo === "Celular") msgErro.innerText = "Celular incompleto (DDD + 9 dígitos)";
+            else if(tipo === "CPF/CNPJ") msgErro.innerText = "CPF/CNPJ incompleto";
+            else if(tipo === "E-mail") msgErro.innerText = "E-mail inválido";
+        }
+    }
+});
 </script>
 </body>
 </html>
